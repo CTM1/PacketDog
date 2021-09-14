@@ -17,7 +17,6 @@ def main():
             print("[.] IPv4 Packet")
             print("\t[+] Version: {}, HeaderLength {}, TTL: {}".format(version, headerLength, ttl))
             print("\t[+] Protocol: {}, Source: {}, Target: {}".format(protocol, src, dst))
-            print(protocol)
 
             if (protocol == 1):
                 ICMPType, code, checks, icmpData = unpackICMP(IPv4Data)
@@ -26,21 +25,21 @@ def main():
                 print("\t[+] ICMP Type: {}, Code: {}, Data: {}".format(ICMPType, code, icmpData))
                 print("\t[+] Checksum: {}".format(checks))
             if (protocol == 6):
-                srcPort, dstPort, sequence, ack, offsetReservedFlags, flagNS, flagACK, flagCWR, flagECE, flagFIN, flagPSH, flagRST, flagSYN, flagURG, tcpData = unpackTCP(IPv4Data)
+                srcPort, dstPort, sequence, ack, offset, flagNS, flagCWR, flagECE, flagURG, flagACK, flagPSH, flagRST, flagSYN, flagFIN, tcpData = unpackTCP(IPv4Data)
 
                 print("[.] TCP Protocol")
-                print("\t[+] Data Offset: {}".format(offsetReservedFlags >> 9))
+                print("\t[+] Data Offset: {}".format(offset))
                 print("\t[+] Source: {}, Destination: {}".format(srcPort, dstPort))
                 print("\t[+] Sequence number: {}, Acknowledgement number: {}".format(sequence, ack))
-                print("\t[+] NS: {}, ACK: {}, CWR: {}, ECE: {}, FIN: {}, PSH: {}, RST: {}, SYN: {}, URG: {}".format(flagNS,
-                flagACK,
+                print("\t[+] NS: {}, CWR: {}, ECE: {}, URG: {}, ACK: {}, PSH: {}, RST: {}, SYN: {}, FIN: {}".format(flagNS,
                 flagCWR,
                 flagECE,
-                flagFIN,
+                flagURG,
+                flagACK,
                 flagPSH,
                 flagRST,
                 flagSYN,
-                flagURG))
+                flagFIN))
                 print("\t[+] Data: {}".format(tcpData))
 
             if (protocol == 17):
@@ -69,28 +68,29 @@ def unpackICMP(data):
 
 def unpackTCP(data):
     srcPort, dstPort, sequence, ack, offsetReservedFlags = struct.unpack("! H H L L H", data[:14])
-    offset  = offsetReservedFlags >> 12 * 4 # Getting it in bytes
-    flagNS  = offsetReservedFlags & 256 >> 8
-    flagCWR = offsetReservedFlags & 128 >> 7
-    flagECE = offsetReservedFlags & 64 >> 6
-    flagURG = offsetReservedFlags & 32 >> 5
-    flagACK = offsetReservedFlags & 16 >> 4
-    flagPSH = offsetReservedFlags & 8 >> 3
-    flagRST = offsetReservedFlags & 4 >> 2
-    flagSYN = offsetReservedFlags & 2 >> 1
-    flagFIN = offsetReservedFlags & 1
+    offset = int(offsetReservedFlags >> 12) * 4 # Getting it in bytes
+    print(offsetReservedFlags)
+    flagNS  = (offsetReservedFlags & 256) >> 8
+    flagCWR = (offsetReservedFlags & 128) >> 7
+    flagECE = (offsetReservedFlags & 64) >> 6
+    flagURG = (offsetReservedFlags & 32) >> 5
+    flagACK = (offsetReservedFlags & 16) >> 4
+    flagPSH = (offsetReservedFlags & 8) >> 3
+    flagRST = (offsetReservedFlags & 4) >> 2
+    flagSYN = (offsetReservedFlags & 2) >> 1
+    flagFIN = (offsetReservedFlags & 1)
 
-    return (srcPort, dstPort, sequence, ack, offsetReservedFlags,
+    return (srcPort, dstPort, sequence, ack, offset,
     flagNS,
-    flagACK,
     flagCWR,
     flagECE,
-    flagFIN,
+    flagURG,
+    flagACK,
     flagPSH,
     flagRST,
     flagSYN,
-    flagURG,
-    data[offsetReservedFlags:])
+    flagFIN,
+    data[14:])
 
 def unpackUDP(data):
     srcPort, dstPort, size = struct.unpack("! H H 2x H", data[:8])
@@ -103,13 +103,5 @@ def formatMac(bytesAddr):
 
 def formatIPv4(bytesAddr):
     return ('.'.join(map(str, bytesAddr)))
-
-def addPadding(data):
-    print(bytes(0))
-    for i in range(0, 400):
-        data += bytes(0)
-        i += 1
-    print(data)
-    return (data)
 
 main()
