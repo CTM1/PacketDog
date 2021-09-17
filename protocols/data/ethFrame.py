@@ -8,7 +8,7 @@ class ethFrame:
     def unpack(self):
         self.dstMac, self.srcMac, proto = struct.unpack("! 6s 6s H", self.rawData[:14])
         self.protocol = socket.htons(proto)
-        self.payload = self.rawData[14:]
+        self.payload  = self.rawData[14:]
 
     def printInfo(self):
         print("\n[*] Ethernet Frame:")

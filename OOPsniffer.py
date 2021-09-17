@@ -7,38 +7,37 @@ from protocols.transport import icmp
 from protocols.transport import tcp
 from protocols.transport import udp
 
-TCP = 6
-ICMP = 1
-UDP = 17
+
 IPV4HEADER = 8
+
+tcpProto  = (tcp, "TCP", 6),
+udpProto  = (udp, "UDP", 17),
+icmpProto = (icmp, "ICMP", 1)
+
+transportProtocols = [tcpProto, udpProto, icmpProto]
 
 def main():
     conn = socket.socket(socket.AF_PACKET, socket.SOCK_RAW, socket.ntohs(3))
     while (True):
-        rawData, addr = conn.recvfrom(65536)
+        rawData, addr = conn.recvfrom(9000)
+
         ethPacket = ethFrame.ethFrame(rawData)
         ethPacket.unpack()
         ethPacket.printInfo()
 
-        # Protocol 8 is IPv4
         if (ethPacket.protocol == IPV4HEADER):
-            ipv4Header = ipv4.IPv4(ethPacket.payload)
-            ipv4Header.unpack()
-            ipv4Header.printInfo()
+            IPv4 = ipv4.IPv4(ethPacket.payload)
+            IPv4.unpack()
+            IPv4.printInfo()
 
-            if (ipv4Header.protocol == ICMP):
-                icmpPacket = icmp.ICMP(ipv4Header.ipv4Data)
-                icmpPacket.unpack()
-                icmpPacket.printInfo()
+            for proto in transportProtocols:
+                if (IPv4.protocol == proto[0][2]):
+                    _class_ = getattr(proto[0][0], proto[0][1])
+                    instance = _class_(IPv4.ipv4Data)
+                    instance.unpack()
+                    instance.printInfo()
+                    break
 
-            if (ipv4Header.protocol == TCP):
-                tcpPacket = tcp.TCP(ipv4Header.ipv4Data)
-                tcpPacket.unpack()
-                tcpPacket.printInfo()
 
-            if (ipv4Header.protocol == UDP):
-                udpPacket = udp.UDP(ipv4Header.ipv4Data)
-                udpPacket.unpack()
-                udpPacket.printInfo()
 
 main()
