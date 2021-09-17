@@ -13,11 +13,11 @@ udpProto  = (udp, "UDP", 17),
 icmpProto = (icmp, "ICMP", 1)
 transportProtocols = [tcpProto, udpProto, icmpProto]
 
-class Sniffer():
+class Sniffer:
     def __init__(self, params):
         self.params = params
 
-    def sniff(self.params):
+    def sniff(params):
         conn = socket.socket(socket.AF_PACKET, socket.SOCK_RAW, socket.ntohs(3))
         while (True):
             rawData, addr = conn.recvfrom(9000)
