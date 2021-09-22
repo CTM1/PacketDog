@@ -78,3 +78,28 @@
 #|              Data             |
 #|              (32)             |
 #|_______________________________|
+
+https://erg.abdn.ac.uk/users/gorry/course/inet-pages/arp.html
+#ARP Spoofing
+
+#ARP Request
+#ARP Reply
+
+#other 2 requests nobody cares
+#Identified by the "operation" field in the arp request
+
+#___________________________________________
+#|Hardware Type (16)  |  Protocol Type (16) |
+#|____________________|_____________________|
+#|HLEN(8) | PLEN (8)  | Operation (16)      |
+#|________|___________|_____________________|
+#|          Sender HA (octets 0-3)          |
+#|__________________________________________|
+#|Sender HA (4-5)     |Sender IP (0-1)      |
+#|____________________|_____________________|
+#|Sender IP (2-3)     |Target HA (0-1)      |
+#|____________________|_____________________|
+#|              Target HA (2-5)             |
+#|__________________________________________|
+#|              Target IP (0-3)             |
+#|__________________________________________|

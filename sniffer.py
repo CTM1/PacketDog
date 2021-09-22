@@ -2,12 +2,14 @@ import socket
 import sys
 
 from protocols.data import ethFrame
+from protocols.data import arp
 from protocols.network import ipv4
 from protocols.transport import icmp
 from protocols.transport import tcp
 from protocols.transport import udp
 
 IPV4HEADER = 8
+ARPHEADER = 1544
 tcpProto  = (tcp, "TCP", 6),
 udpProto  = (udp, "UDP", 17),
 icmpProto = (icmp, "ICMP", 1)
@@ -37,3 +39,10 @@ class Sniffer:
                         instance.unpack()
                         instance.printInfo()
                         break
+            if (ethPacket.protocol == ARPHEADER):
+                arpPacket = arp.ARP(ethPacket.payload)
+                arpPacket.unpack()
+                arpPacket.printInfo()
+
+sniff = Sniffer(None)
+sniff.sniff()
