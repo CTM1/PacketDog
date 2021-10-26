@@ -2,4 +2,9 @@
 
 Simple packet sniffer written from scratch in python
 
-Scans for ARP, TCP/IP, UDP, IPv4 Headers and Ethernet Frames
+Scans for ARP, TCP/IP, UDP, ICMP, IPv4 Headers and Ethernet Frames
+
+## TO-DO:
+
+- Implement **CLI**
+- Add possibility to conduct ARP spoofing attacks
